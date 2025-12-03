@@ -353,9 +353,9 @@ feature -- Content (fluent)
 		end
 
 	raw_html (a_html: READABLE_STRING_GENERAL): like Current
-			-- Set raw HTML content (use with caution - no escaping).
+			-- Append raw HTML content (use with caution - no escaping).
 		do
-			content_text := a_html.to_string_32
+			content_text.append (a_html.to_string_32)
 			Result := Current
 		end
 
@@ -408,12 +408,13 @@ feature {NONE} -- Implementation
 				a_buffer.append_character ('"')
 			end
 			-- Add other attributes
-			across attributes as a loop
+			from attributes.start until attributes.after loop
 				a_buffer.append_character (' ')
 				a_buffer.append_string_general (attributes.key_for_iteration)
 				a_buffer.append_string_general ("=%"")
-				a_buffer.append (escape_html (a))
+				a_buffer.append (escape_html (attributes.item_for_iteration))
 				a_buffer.append_character ('"')
+				attributes.forth
 			end
 		end
 

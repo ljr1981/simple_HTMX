@@ -584,6 +584,53 @@ html.div.attr ("data-value", "foo\"bar").to_html_8
 
 ---
 
+## Roadmap
+
+### Completed Features
+- [x] Core fluent HTML element builder (31 elements)
+- [x] Full HTMX attribute support (hx-get, hx-post, hx-target, hx-swap, etc.)
+- [x] Automatic HTML escaping for security
+- [x] HTMX_RENDER_CONTEXT for URL path building
+- [x] HTMX_FACTORY for convenient element creation
+- [x] Tables, lists, forms with specialized methods
+- [x] Void elements (br, hr, img, input)
+- [x] 35+ comprehensive tests
+
+### Planned Features
+- [ ] Server-Sent Events (SSE) helpers
+- [ ] WebSocket attribute support
+- [ ] Template/partial rendering support
+- [ ] Additional HTMX extensions (hyperscript, etc.)
+
+---
+
+## Known Issues & Fixes
+
+### Bug Fix: raw_html Accumulation (v1.1)
+
+**Issue**: Multiple calls to `raw_html` would overwrite content instead of accumulating.
+
+```eiffel
+-- BEFORE (broken): Only "Third" appeared
+l_div.raw_html ("<span>First</span>").do_nothing
+l_div.raw_html ("<span>Second</span>").do_nothing
+l_div.raw_html ("<span>Third</span>").do_nothing
+```
+
+**Fix**: Changed `raw_html` to append instead of overwrite:
+```eiffel
+-- AFTER (fixed): All three spans appear
+raw_html (a_html: READABLE_STRING_GENERAL): like Current
+    do
+        content_text.append (a_html.to_string_32)  -- Was: content_text := ...
+        Result := Current
+    end
+```
+
+**Regression test added**: `test_raw_html_multiple_calls_accumulate`
+
+---
+
 ## License
 
 MIT License - Copyright (c) 2024-2025, Larry Rix

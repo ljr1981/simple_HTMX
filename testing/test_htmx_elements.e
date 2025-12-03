@@ -409,6 +409,109 @@ feature -- Tests: HTML Escaping
 			assert ("has escaped quotes", l_div.to_html_8.has_substring ("&quot;"))
 		end
 
+feature -- Tests: Multiple Attributes (Regression test for HASH_TABLE iteration bug)
+
+	test_multiple_attributes_iteration
+			-- Test that multiple attributes are correctly rendered.
+			-- Regression test: Previously used HASH_TABLE.key_for_iteration inside
+			-- across loop, which caused PRECONDITION_VIOLATION (not_off).
+		local
+			l_div: HTMX_DIV
+			l_html: STRING
+		do
+			create l_div.make
+			l_div.id ("test-id")
+				.data ("value", "123")
+				.data ("name", "item")
+				.attr ("draggable", "true")
+				.attr ("tabindex", "0").do_nothing
+			l_html := l_div.to_html_8
+			assert ("has id", l_html.has_substring ("id=%"test-id%""))
+			assert ("has data-value", l_html.has_substring ("data-value=%"123%""))
+			assert ("has data-name", l_html.has_substring ("data-name=%"item%""))
+			assert ("has draggable", l_html.has_substring ("draggable=%"true%""))
+			assert ("has tabindex", l_html.has_substring ("tabindex=%"0%""))
+		end
+
+	test_htmx_attributes_iteration
+			-- Test that multiple HTMX attributes are correctly rendered.
+		local
+			l_btn: HTMX_BUTTON
+			l_html: STRING
+		do
+			create l_btn.make_with_text ("Save")
+			l_btn.hx_post ("/api/save")
+				.hx_target ("#result")
+				.hx_swap_inner_html
+				.hx_confirm ("Save changes?")
+				.hx_indicator ("#spinner").do_nothing
+			l_html := l_btn.to_html_8
+			assert ("has hx-post", l_html.has_substring ("hx-post=%"/api/save%""))
+			assert ("has hx-target", l_html.has_substring ("hx-target=%"#result%""))
+			assert ("has hx-swap", l_html.has_substring ("hx-swap=%"innerHTML%""))
+			assert ("has hx-confirm", l_html.has_substring ("hx-confirm=%"Save changes?%""))
+			assert ("has hx-indicator", l_html.has_substring ("hx-indicator=%"#spinner%""))
+		end
+
+feature -- Tests: raw_html Accumulation (Regression test for overwrite bug)
+
+	test_raw_html_single_call
+			-- Test single raw_html call.
+		local
+			l_div: HTMX_DIV
+		do
+			create l_div.make
+			l_div.raw_html ("<span>Content</span>").do_nothing
+			assert_strings_equal ("single raw_html", "<div><span>Content</span></div>", l_div.to_html_8)
+		end
+
+	test_raw_html_multiple_calls_accumulate
+			-- Test that multiple raw_html calls ACCUMULATE content, not overwrite.
+			-- Regression test: Previously raw_html would overwrite content_text,
+			-- causing only the last call to appear in output.
+		local
+			l_div: HTMX_DIV
+			l_html: STRING
+		do
+			create l_div.make
+			l_div.raw_html ("<span>First</span>").do_nothing
+			l_div.raw_html ("<span>Second</span>").do_nothing
+			l_div.raw_html ("<span>Third</span>").do_nothing
+			l_html := l_div.to_html_8
+			assert ("has first", l_html.has_substring ("<span>First</span>"))
+			assert ("has second", l_html.has_substring ("<span>Second</span>"))
+			assert ("has third", l_html.has_substring ("<span>Third</span>"))
+		end
+
+	test_raw_html_in_loop
+			-- Test raw_html in a loop pattern (simulates render_canvas).
+			-- This is the exact pattern that was failing in GUI Designer.
+		local
+			l_row_div: HTMX_DIV
+			l_controls: ARRAYED_LIST [STRING]
+			l_html: STRING
+		do
+			create l_controls.make (5)
+			l_controls.extend ("<div class=%"control%">Control 1</div>")
+			l_controls.extend ("<div class=%"control%">Control 2</div>")
+			l_controls.extend ("<div class=%"control%">Control 3</div>")
+			l_controls.extend ("<div class=%"control%">Control 4</div>")
+			l_controls.extend ("<div class=%"control%">Control 5</div>")
+
+			create l_row_div.make
+			l_row_div.class_ ("grid-row").do_nothing
+			across l_controls as l_ctrl loop
+				l_row_div.raw_html (l_ctrl).do_nothing
+			end
+
+			l_html := l_row_div.to_html_8
+			assert ("has control 1", l_html.has_substring ("Control 1"))
+			assert ("has control 2", l_html.has_substring ("Control 2"))
+			assert ("has control 3", l_html.has_substring ("Control 3"))
+			assert ("has control 4", l_html.has_substring ("Control 4"))
+			assert ("has control 5", l_html.has_substring ("Control 5"))
+		end
+
 feature -- Tests: Complex HTMX Patterns
 
 	test_htmx_search_pattern
