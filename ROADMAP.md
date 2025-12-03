@@ -41,11 +41,15 @@ ec.exe -batch -config simple_htmx.ecf -target simple_htmx_tests -c_compile -free
 
 ### Current Status
 
-**Stable / Initial Release** - 30+ tests passing
+**Stable / Production** - 35+ tests passing
 
-Primary work now:
+Completed work:
+- ✅ simple_gui_designer integration (refactored to use simple_htmx)
+- ✅ Bug fix: raw_html accumulation
+- ✅ Added h4, h5 elements and input_number factory
+
+Future work:
 - Contract strengthening (Contracting Hat)
-- simple_gui_designer integration (refactor to use simple_htmx)
 - Additional element types as needed
 
 ---
@@ -190,8 +194,8 @@ end
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **simple_gui_designer refactor** | Replace string building with simple_htmx | Planned |
-| **simple_web integration** | Document usage patterns | Planned |
+| **simple_gui_designer refactor** | Replace string building with simple_htmx | ✅ Complete |
+| **simple_web integration** | Document usage patterns | ✅ Documented |
 | **Contract strengthening** | DBC throughout | Ongoing |
 
 ### Phase 3 - Expansion (As Needed)
@@ -312,7 +316,26 @@ None currently. Library is stable.
 
 ## Session Notes
 
-### 2024-12 (Library Creation)
+### 2025-12-03 (Integration & Bug Fixes)
+
+**Task**: Integrate simple_htmx into simple_gui_designer, fix discovered bugs
+
+**Work Done**:
+- Refactored gds_html_renderer.e (577 lines changed) to use fluent builders
+- Refactored gds_static_html.e dynamic methods
+- Fixed raw_html accumulation bug (was overwriting instead of appending)
+- Added h4, h5 element classes and input_number factory method
+- Added 3 regression tests for raw_html
+
+**Bugs Fixed**:
+- `raw_html` was using assignment instead of append, causing only last call to appear
+- Discovered during GUI Designer canvas rendering (only one control per row showed)
+
+**Result**: Integration complete, 35+ tests passing
+
+---
+
+### 2025-12-03 (Library Creation)
 
 **Task**: Create simple_htmx library from code smell analysis
 
