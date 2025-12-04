@@ -23,11 +23,13 @@ feature {NONE} -- Initialization
 			-- Create empty element.
 		do
 			create attributes.make (10)
+			create raw_attributes.make (5)
 			create classes.make (5)
 			create children.make (10)
 			create content_text.make_empty
 		ensure
 			attributes_created: attributes /= Void
+			raw_attributes_created: raw_attributes /= Void
 			classes_created: classes /= Void
 			children_created: children /= Void
 		end
@@ -52,6 +54,10 @@ feature -- Attributes
 
 	attributes: HASH_TABLE [STRING_32, STRING]
 			-- All attributes (name -> value).
+
+	raw_attributes: HASH_TABLE [STRING_32, STRING]
+			-- Attributes with raw values (no HTML escaping).
+			-- Used for JavaScript expressions containing <, >, &, etc.
 
 	classes: ARRAYED_LIST [STRING]
 			-- CSS classes.
@@ -123,6 +129,19 @@ feature -- Standard HTML Attributes (fluent)
 		ensure
 			fluent_result: Result = Current
 			data_attribute_set: attached attributes.item ("data-" + a_name) as v and then v.same_string (a_value.to_string_32)
+		end
+
+	attr_raw (a_name: STRING; a_value: READABLE_STRING_GENERAL): like Current
+			-- Set an arbitrary attribute with raw value (no HTML escaping).
+			-- Use for JavaScript expressions containing <, >, &, =>, &&, etc.
+		require
+			name_not_empty: not a_name.is_empty
+		do
+			raw_attributes.force (a_value.to_string_32, a_name)
+			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached raw_attributes.item (a_name) as v and then v.same_string (a_value.to_string_32)
 		end
 
 	style (a_style: READABLE_STRING_GENERAL): like Current
@@ -514,7 +533,7 @@ feature {NONE} -- Implementation
 				a_buffer.append_string_general (l_class_str)
 				a_buffer.append_character ('"')
 			end
-			-- Add other attributes
+			-- Add escaped attributes
 			from attributes.start until attributes.after loop
 				a_buffer.append_character (' ')
 				a_buffer.append_string_general (attributes.key_for_iteration)
@@ -522,6 +541,15 @@ feature {NONE} -- Implementation
 				a_buffer.append (escape_html (attributes.item_for_iteration))
 				a_buffer.append_character ('"')
 				attributes.forth
+			end
+			-- Add raw attributes (no escaping - for JavaScript expressions)
+			from raw_attributes.start until raw_attributes.after loop
+				a_buffer.append_character (' ')
+				a_buffer.append_string_general (raw_attributes.key_for_iteration)
+				a_buffer.append_string_general ("=%"")
+				a_buffer.append (raw_attributes.item_for_iteration)
+				a_buffer.append_character ('"')
+				raw_attributes.forth
 			end
 		end
 
@@ -554,6 +582,7 @@ feature {NONE} -- Implementation
 
 invariant
 	attributes_attached: attributes /= Void
+	raw_attributes_attached: raw_attributes /= Void
 	classes_attached: classes /= Void
 	children_attached: children /= Void
 
