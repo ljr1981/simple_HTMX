@@ -61,24 +61,36 @@ feature -- Path Building (fluent)
 		do
 			path_segments.extend ([a_type.to_string_32, a_id.to_string_32])
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			segment_added: path_segments.count = old path_segments.count + 1
 		end
 
 	with_spec (a_spec_id: READABLE_STRING_GENERAL): like Current
 			-- Add specs/{id} segment.
 		do
 			Result := resource ("specs", a_spec_id)
+		ensure
+			fluent_result: Result = Current
+			segment_added: path_segments.count = old path_segments.count + 1
 		end
 
 	with_screen (a_screen_id: READABLE_STRING_GENERAL): like Current
 			-- Add screens/{id} segment.
 		do
 			Result := resource ("screens", a_screen_id)
+		ensure
+			fluent_result: Result = Current
+			segment_added: path_segments.count = old path_segments.count + 1
 		end
 
 	with_control (a_control_id: READABLE_STRING_GENERAL): like Current
 			-- Add controls/{id} segment.
 		do
 			Result := resource ("controls", a_control_id)
+		ensure
+			fluent_result: Result = Current
+			segment_added: path_segments.count = old path_segments.count + 1
 		end
 
 feature -- URL Generation
@@ -102,6 +114,8 @@ feature -- URL Generation
 			-- Generate full URL as STRING_8.
 		do
 			Result := url.to_string_8
+		ensure
+			result_not_void: Result /= Void
 		end
 
 	url_for (a_action: READABLE_STRING_GENERAL): STRING_32
@@ -110,12 +124,17 @@ feature -- URL Generation
 			Result := url
 			Result.append_character ('/')
 			Result.append_string_general (a_action)
+		ensure
+			result_not_void: Result /= Void
+			ends_with_action: Result.ends_with (a_action.to_string_32)
 		end
 
 	url_for_8 (a_action: READABLE_STRING_GENERAL): STRING_8
 			-- Generate URL with action as STRING_8.
 		do
 			Result := url_for (a_action).to_string_8
+		ensure
+			result_not_void: Result /= Void
 		end
 
 	url_for_id (a_resource: READABLE_STRING_GENERAL; a_id: READABLE_STRING_GENERAL): STRING_32
@@ -126,12 +145,17 @@ feature -- URL Generation
 			Result.append_string_general (a_resource)
 			Result.append_character ('/')
 			Result.append_string_general (a_id)
+		ensure
+			result_not_void: Result /= Void
+			ends_with_id: Result.ends_with (a_id.to_string_32)
 		end
 
 	url_for_id_8 (a_resource: READABLE_STRING_GENERAL; a_id: READABLE_STRING_GENERAL): STRING_8
 			-- Generate URL with resource and ID as STRING_8.
 		do
 			Result := url_for_id (a_resource, a_id).to_string_8
+		ensure
+			result_not_void: Result /= Void
 		end
 
 feature -- Convenience for Common Patterns
@@ -140,12 +164,18 @@ feature -- Convenience for Common Patterns
 			-- URL for controls collection.
 		do
 			Result := url_for ("controls")
+		ensure
+			result_not_void: Result /= Void
+			ends_with_controls: Result.ends_with ("controls")
 		end
 
 	control_url (a_id: READABLE_STRING_GENERAL): STRING_32
 			-- URL for specific control.
 		do
 			Result := url_for_id ("controls", a_id)
+		ensure
+			result_not_void: Result /= Void
+			ends_with_id: Result.ends_with (a_id.to_string_32)
 		end
 
 	properties_url (a_control_id: READABLE_STRING_GENERAL): STRING_32
@@ -154,6 +184,9 @@ feature -- Convenience for Common Patterns
 			Result := url
 			Result.append_string_general ("/properties/")
 			Result.append_string_general (a_control_id)
+		ensure
+			result_not_void: Result /= Void
+			ends_with_id: Result.ends_with (a_control_id.to_string_32)
 		end
 
 feature -- Duplication
@@ -165,6 +198,11 @@ feature -- Duplication
 			across path_segments as seg loop
 				Result.path_segments.extend (seg)
 			end
+		ensure
+			result_not_void: Result /= Void
+			result_different: Result /= Current
+			same_base_path: Result.base_path.same_string (base_path)
+			same_segment_count: Result.path_segments.count = path_segments.count
 		end
 
 	child (a_type: READABLE_STRING_GENERAL; a_id: READABLE_STRING_GENERAL): like Current
@@ -172,6 +210,11 @@ feature -- Duplication
 		do
 			Result := twin_context
 			Result.resource (a_type, a_id).do_nothing
+		ensure
+			result_not_void: Result /= Void
+			result_different: Result /= Current
+			current_unchanged: path_segments.count = old path_segments.count
+			child_has_more: Result.path_segments.count = path_segments.count + 1
 		end
 
 feature -- Target Selectors
@@ -182,6 +225,10 @@ feature -- Target Selectors
 			create Result.make (a_id.count + 1)
 			Result.append_character ('#')
 			Result.append_string_general (a_id)
+		ensure
+			result_not_void: Result /= Void
+			starts_with_hash: Result.item (1) = '#'
+			correct_length: Result.count = a_id.count + 1
 		end
 
 	target_class (a_class: READABLE_STRING_GENERAL): STRING_32
@@ -190,6 +237,10 @@ feature -- Target Selectors
 			create Result.make (a_class.count + 1)
 			Result.append_character ('.')
 			Result.append_string_general (a_class)
+		ensure
+			result_not_void: Result /= Void
+			starts_with_dot: Result.item (1) = '.'
+			correct_length: Result.count = a_class.count + 1
 		end
 
 invariant

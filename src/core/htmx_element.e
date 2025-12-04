@@ -70,6 +70,7 @@ feature -- Standard HTML Attributes (fluent)
 			attributes.force (a_id.to_string_32, "id")
 			Result := Current
 		ensure
+			fluent_result: Result = Current
 			id_set: attached attributes.item ("id") as l_id and then l_id.same_string_general (a_id)
 		end
 
@@ -79,7 +80,9 @@ feature -- Standard HTML Attributes (fluent)
 			classes.extend (a_class.to_string_8)
 			Result := Current
 		ensure
+			fluent_result: Result = Current
 			class_added: classes.has (a_class.to_string_8)
+			count_increased: classes.count = old classes.count + 1
 		end
 
 	classes_from (a_classes: READABLE_STRING_GENERAL): like Current
@@ -94,6 +97,8 @@ feature -- Standard HTML Attributes (fluent)
 				end
 			end
 			Result := Current
+		ensure
+			fluent_result: Result = Current
 		end
 
 	attr (a_name: STRING; a_value: READABLE_STRING_GENERAL): like Current
@@ -104,7 +109,8 @@ feature -- Standard HTML Attributes (fluent)
 			attributes.force (a_value.to_string_32, a_name)
 			Result := Current
 		ensure
-			attribute_set: attached attributes.item (a_name)
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item (a_name) as v and then v.same_string (a_value.to_string_32)
 		end
 
 	data (a_name: STRING; a_value: READABLE_STRING_GENERAL): like Current
@@ -115,7 +121,8 @@ feature -- Standard HTML Attributes (fluent)
 			attributes.force (a_value.to_string_32, "data-" + a_name)
 			Result := Current
 		ensure
-			data_attribute_set: attached attributes.item ("data-" + a_name)
+			fluent_result: Result = Current
+			data_attribute_set: attached attributes.item ("data-" + a_name) as v and then v.same_string (a_value.to_string_32)
 		end
 
 	style (a_style: READABLE_STRING_GENERAL): like Current
@@ -123,6 +130,9 @@ feature -- Standard HTML Attributes (fluent)
 		do
 			attributes.force (a_style.to_string_32, "style")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("style") as v and then v.same_string (a_style.to_string_32)
 		end
 
 	title (a_title: READABLE_STRING_GENERAL): like Current
@@ -130,6 +140,9 @@ feature -- Standard HTML Attributes (fluent)
 		do
 			attributes.force (a_title.to_string_32, "title")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("title") as v and then v.same_string (a_title.to_string_32)
 		end
 
 	disabled: like Current
@@ -137,6 +150,9 @@ feature -- Standard HTML Attributes (fluent)
 		do
 			attributes.force ("disabled", "disabled")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attributes.has ("disabled")
 		end
 
 	hidden: like Current
@@ -144,6 +160,9 @@ feature -- Standard HTML Attributes (fluent)
 		do
 			attributes.force ("hidden", "hidden")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attributes.has ("hidden")
 		end
 
 feature -- HTMX Attributes (fluent)
@@ -153,6 +172,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_url.to_string_32, "hx-get")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-get") as v and then v.same_string (a_url.to_string_32)
 		end
 
 	hx_post (a_url: READABLE_STRING_GENERAL): like Current
@@ -160,6 +182,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_url.to_string_32, "hx-post")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-post") as v and then v.same_string (a_url.to_string_32)
 		end
 
 	hx_put (a_url: READABLE_STRING_GENERAL): like Current
@@ -167,6 +192,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_url.to_string_32, "hx-put")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-put") as v and then v.same_string (a_url.to_string_32)
 		end
 
 	hx_patch (a_url: READABLE_STRING_GENERAL): like Current
@@ -174,6 +202,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_url.to_string_32, "hx-patch")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-patch") as v and then v.same_string (a_url.to_string_32)
 		end
 
 	hx_delete (a_url: READABLE_STRING_GENERAL): like Current
@@ -181,6 +212,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_url.to_string_32, "hx-delete")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-delete") as v and then v.same_string (a_url.to_string_32)
 		end
 
 	hx_target (a_selector: READABLE_STRING_GENERAL): like Current
@@ -188,6 +222,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_selector.to_string_32, "hx-target")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-target") as v and then v.same_string (a_selector.to_string_32)
 		end
 
 	hx_swap (a_mode: READABLE_STRING_GENERAL): like Current
@@ -196,42 +233,63 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_mode.to_string_32, "hx-swap")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string (a_mode.to_string_32)
 		end
 
 	hx_swap_inner_html: like Current
 			-- Set hx-swap to innerHTML (replace inner content).
 		do
 			Result := hx_swap ("innerHTML")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string ("innerHTML")
 		end
 
 	hx_swap_outer_html: like Current
 			-- Set hx-swap to outerHTML (replace entire element).
 		do
 			Result := hx_swap ("outerHTML")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string ("outerHTML")
 		end
 
 	hx_swap_before_end: like Current
 			-- Set hx-swap to beforeend (append inside).
 		do
 			Result := hx_swap ("beforeend")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string ("beforeend")
 		end
 
 	hx_swap_after_end: like Current
 			-- Set hx-swap to afterend (insert after).
 		do
 			Result := hx_swap ("afterend")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string ("afterend")
 		end
 
 	hx_swap_delete: like Current
 			-- Set hx-swap to delete (remove element).
 		do
 			Result := hx_swap ("delete")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string ("delete")
 		end
 
 	hx_swap_none: like Current
 			-- Set hx-swap to none (don't swap, just trigger events).
 		do
 			Result := hx_swap ("none")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-swap") as v and then v.same_string ("none")
 		end
 
 	hx_trigger (a_event: READABLE_STRING_GENERAL): like Current
@@ -240,30 +298,45 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_event.to_string_32, "hx-trigger")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-trigger") as v and then v.same_string (a_event.to_string_32)
 		end
 
 	hx_trigger_click: like Current
 			-- Set hx-trigger to click.
 		do
 			Result := hx_trigger ("click")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-trigger") as v and then v.same_string ("click")
 		end
 
 	hx_trigger_change: like Current
 			-- Set hx-trigger to change.
 		do
 			Result := hx_trigger ("change")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-trigger") as v and then v.same_string ("change")
 		end
 
 	hx_trigger_submit: like Current
 			-- Set hx-trigger to submit.
 		do
 			Result := hx_trigger ("submit")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-trigger") as v and then v.same_string ("submit")
 		end
 
 	hx_trigger_load: like Current
 			-- Set hx-trigger to load (fire on page load).
 		do
 			Result := hx_trigger ("load")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-trigger") as v and then v.same_string ("load")
 		end
 
 	hx_indicator (a_selector: READABLE_STRING_GENERAL): like Current
@@ -271,6 +344,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_selector.to_string_32, "hx-indicator")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-indicator") as v and then v.same_string (a_selector.to_string_32)
 		end
 
 	hx_confirm (a_message: READABLE_STRING_GENERAL): like Current
@@ -278,6 +354,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_message.to_string_32, "hx-confirm")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-confirm") as v and then v.same_string (a_message.to_string_32)
 		end
 
 	hx_disable: like Current
@@ -285,6 +364,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force ("true", "hx-disable")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attributes.has ("hx-disable")
 		end
 
 	hx_vals (a_json: READABLE_STRING_GENERAL): like Current
@@ -292,6 +374,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_json.to_string_32, "hx-vals")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-vals") as v and then v.same_string (a_json.to_string_32)
 		end
 
 	hx_include (a_selector: READABLE_STRING_GENERAL): like Current
@@ -299,6 +384,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_selector.to_string_32, "hx-include")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-include") as v and then v.same_string (a_selector.to_string_32)
 		end
 
 	hx_select (a_selector: READABLE_STRING_GENERAL): like Current
@@ -306,6 +394,9 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_selector.to_string_32, "hx-select")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-select") as v and then v.same_string (a_selector.to_string_32)
 		end
 
 	hx_push_url (a_url: READABLE_STRING_GENERAL): like Current
@@ -313,12 +404,18 @@ feature -- HTMX Attributes (fluent)
 		do
 			attributes.force (a_url.to_string_32, "hx-push-url")
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-push-url") as v and then v.same_string (a_url.to_string_32)
 		end
 
 	hx_push_url_true: like Current
 			-- Set hx-push-url to true (push request URL to history).
 		do
 			Result := hx_push_url ("true")
+		ensure
+			fluent_result: Result = Current
+			attribute_set: attached attributes.item ("hx-push-url") as v and then v.same_string ("true")
 		end
 
 feature -- Content (fluent)
@@ -328,6 +425,9 @@ feature -- Content (fluent)
 		do
 			content_text := a_text.to_string_32
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			text_set: content_text.same_string (a_text.to_string_32)
 		end
 
 	containing (a_child: HTMX_ELEMENT): like Current
@@ -338,7 +438,9 @@ feature -- Content (fluent)
 			children.extend (a_child)
 			Result := Current
 		ensure
+			fluent_result: Result = Current
 			child_added: children.has (a_child)
+			count_increased: children.count = old children.count + 1
 		end
 
 	with_children (a_children: ARRAY [HTMX_ELEMENT]): like Current
@@ -350,6 +452,8 @@ feature -- Content (fluent)
 				children.extend (c)
 			end
 			Result := Current
+		ensure
+			fluent_result: Result = Current
 		end
 
 	raw_html (a_html: READABLE_STRING_GENERAL): like Current
@@ -357,6 +461,9 @@ feature -- Content (fluent)
 		do
 			content_text.append (a_html.to_string_32)
 			Result := Current
+		ensure
+			fluent_result: Result = Current
+			content_appended: content_text.count >= old content_text.count
 		end
 
 feature -- Output
