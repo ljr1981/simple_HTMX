@@ -41,15 +41,16 @@ ec.exe -batch -config simple_htmx.ecf -target simple_htmx_tests -c_compile -free
 
 ### Current Status
 
-**Stable / Production** - 35+ tests passing
+**Stable / Production** - 40 tests passing
 
 Completed work:
 - ✅ simple_gui_designer integration (refactored to use simple_htmx)
 - ✅ Bug fix: raw_html accumulation
 - ✅ Added h4, h5 elements and input_number factory
+- ✅ Added raw_attributes support (for JavaScript in Alpine.js directives)
+- ✅ DBC contracts strengthened (fluent_result, attribute_set postconditions)
 
 Future work:
-- Contract strengthening (Contracting Hat)
 - Additional element types as needed
 
 ---
@@ -315,6 +316,30 @@ None currently. Library is stable.
 ---
 
 ## Session Notes
+
+### 2025-12-03 (raw_attributes Feature)
+
+**Task**: Enable unescaped attribute values for JavaScript expressions
+
+**Problem**: simple_alpine's Alpine.js directives contain JavaScript that was being HTML-escaped:
+- `=>` became `&gt;` (broke arrow functions)
+- `&&` became `&amp;&amp;` (broke logical AND)
+- `<` and `>` in comparisons were escaped
+
+**Solution**:
+- Added `raw_attributes` hash table parallel to `attributes`
+- Added `attr_raw()` method to set attributes without HTML escaping
+- Modified `append_attributes()` to output both escaped and raw attributes
+- simple_alpine now uses raw_attributes for all Alpine directives
+
+**DBC Contracts Added**:
+- `fluent_result` postconditions on all methods returning `like Current`
+- `attribute_set` postconditions verifying attribute is in hash table after call
+- `count_increased` postconditions for collection operations
+
+**Result**: 40 tests passing, raw JavaScript preserved in Alpine.js attributes
+
+---
 
 ### 2025-12-03 (Integration & Bug Fixes)
 
