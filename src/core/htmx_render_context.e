@@ -106,16 +106,12 @@ feature -- URL Generation
 				Result.append_character ('/')
 				Result.append (seg.resource_id)
 			end
-		ensure
-			result_not_void: Result /= Void
 		end
 
 	url_8: STRING_8
 			-- Generate full URL as STRING_8.
 		do
 			Result := url.to_string_8
-		ensure
-			result_not_void: Result /= Void
 		end
 
 	url_for (a_action: READABLE_STRING_GENERAL): STRING_32
@@ -125,7 +121,6 @@ feature -- URL Generation
 			Result.append_character ('/')
 			Result.append_string_general (a_action)
 		ensure
-			result_not_void: Result /= Void
 			ends_with_action: Result.ends_with (a_action.to_string_32)
 		end
 
@@ -133,8 +128,6 @@ feature -- URL Generation
 			-- Generate URL with action as STRING_8.
 		do
 			Result := url_for (a_action).to_string_8
-		ensure
-			result_not_void: Result /= Void
 		end
 
 	url_for_id (a_resource: READABLE_STRING_GENERAL; a_id: READABLE_STRING_GENERAL): STRING_32
@@ -146,7 +139,6 @@ feature -- URL Generation
 			Result.append_character ('/')
 			Result.append_string_general (a_id)
 		ensure
-			result_not_void: Result /= Void
 			ends_with_id: Result.ends_with (a_id.to_string_32)
 		end
 
@@ -154,8 +146,6 @@ feature -- URL Generation
 			-- Generate URL with resource and ID as STRING_8.
 		do
 			Result := url_for_id (a_resource, a_id).to_string_8
-		ensure
-			result_not_void: Result /= Void
 		end
 
 feature -- Convenience for Common Patterns
@@ -165,7 +155,6 @@ feature -- Convenience for Common Patterns
 		do
 			Result := url_for ("controls")
 		ensure
-			result_not_void: Result /= Void
 			ends_with_controls: Result.ends_with ("controls")
 		end
 
@@ -174,7 +163,6 @@ feature -- Convenience for Common Patterns
 		do
 			Result := url_for_id ("controls", a_id)
 		ensure
-			result_not_void: Result /= Void
 			ends_with_id: Result.ends_with (a_id.to_string_32)
 		end
 
@@ -185,7 +173,6 @@ feature -- Convenience for Common Patterns
 			Result.append_string_general ("/properties/")
 			Result.append_string_general (a_control_id)
 		ensure
-			result_not_void: Result /= Void
 			ends_with_id: Result.ends_with (a_control_id.to_string_32)
 		end
 
@@ -199,7 +186,6 @@ feature -- Duplication
 				Result.path_segments.extend (seg)
 			end
 		ensure
-			result_not_void: Result /= Void
 			result_different: Result /= Current
 			same_base_path: Result.base_path.same_string (base_path)
 			same_segment_count: Result.path_segments.count = path_segments.count
@@ -211,7 +197,6 @@ feature -- Duplication
 			Result := twin_context
 			Result.resource (a_type, a_id).do_nothing
 		ensure
-			result_not_void: Result /= Void
 			result_different: Result /= Current
 			current_unchanged: path_segments.count = old path_segments.count
 			child_has_more: Result.path_segments.count = path_segments.count + 1
@@ -226,7 +211,6 @@ feature -- Target Selectors
 			Result.append_character ('#')
 			Result.append_string_general (a_id)
 		ensure
-			result_not_void: Result /= Void
 			starts_with_hash: Result.item (1) = '#'
 			correct_length: Result.count = a_id.count + 1
 		end
@@ -238,7 +222,6 @@ feature -- Target Selectors
 			Result.append_character ('.')
 			Result.append_string_general (a_class)
 		ensure
-			result_not_void: Result /= Void
 			starts_with_dot: Result.item (1) = '.'
 			correct_length: Result.count = a_class.count + 1
 		end

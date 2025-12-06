@@ -503,8 +503,6 @@ feature -- Output
 				Result.append_string_general (tag_name)
 				Result.append_character ('>')
 			end
-		ensure
-			result_not_void: Result /= Void
 		end
 
 	to_html_8: STRING_8
