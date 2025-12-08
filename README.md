@@ -10,7 +10,7 @@
 [![Design by Contract](https://img.shields.io/badge/DbC-enforced-orange.svg)]()
 [![Void Safety](https://img.shields.io/badge/void_safety-all-brightgreen.svg)]
 
-**[Documentation](https://ljr1981.github.io/simple_htmx/)**
+**[Documentation](https://simple-eiffel.github.io/simple_htmx/)**
 
 ---
 
