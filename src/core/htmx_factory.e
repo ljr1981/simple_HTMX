@@ -19,19 +19,23 @@ class
 
 feature -- Container Elements
 
-	div: HTMX_DIV
+	div,
+	container,
+	block: HTMX_DIV
 			-- Create empty div.
 		do
 			create Result.make
 		end
 
-	span: HTMX_SPAN
+	span,
+	inline: HTMX_SPAN
 			-- Create empty span.
 		do
 			create Result.make
 		end
 
-	p: HTMX_P
+	p,
+	paragraph: HTMX_P
 			-- Create paragraph.
 		do
 			create Result.make
@@ -192,7 +196,9 @@ feature -- Buttons
 
 feature -- Links
 
-	a: HTMX_A
+	a,
+	anchor,
+	hyperlink: HTMX_A
 			-- Create empty anchor.
 		do
 			create Result.make
@@ -206,7 +212,8 @@ feature -- Links
 
 feature -- Images
 
-	img (a_src, a_alt: READABLE_STRING_GENERAL): HTMX_IMG
+	img,
+	image (a_src, a_alt: READABLE_STRING_GENERAL): HTMX_IMG
 			-- Create image with src and alt.
 		do
 			create Result.make_src (a_src, a_alt)
@@ -214,19 +221,24 @@ feature -- Images
 
 feature -- Lists
 
-	ul: HTMX_UL
+	ul,
+	unordered_list,
+	bullet_list: HTMX_UL
 			-- Create unordered list.
 		do
 			create Result.make
 		end
 
-	ol: HTMX_OL
+	ol,
+	ordered_list,
+	numbered_list: HTMX_OL
 			-- Create ordered list.
 		do
 			create Result.make
 		end
 
-	li: HTMX_LI
+	li,
+	list_item: HTMX_LI
 			-- Create list item.
 		do
 			create Result.make
@@ -234,25 +246,32 @@ feature -- Lists
 
 feature -- Tables
 
-	table: HTMX_TABLE
+	table,
+	data_table,
+	grid: HTMX_TABLE
 			-- Create table.
 		do
 			create Result.make
 		end
 
-	tr: HTMX_TR
+	tr,
+	table_row,
+	row: HTMX_TR
 			-- Create table row.
 		do
 			create Result.make
 		end
 
-	th: HTMX_TH
+	th,
+	header_cell: HTMX_TH
 			-- Create table header cell.
 		do
 			create Result.make
 		end
 
-	td: HTMX_TD
+	td,
+	cell,
+	data_cell: HTMX_TD
 			-- Create table data cell.
 		do
 			create Result.make
